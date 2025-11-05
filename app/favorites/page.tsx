@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import MovieCard from '@/components/MovieCard';
+import ShareButton from '@/components/ShareButton';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { useFavorites } from '@/lib/hooks/useFavorites';
 import { tmdbClient } from '@/lib/services/tmdbClient';
@@ -43,13 +44,18 @@ export default function FavoritesPage() {
 
       <main className="pt-20 pb-8">
         <div className="px-4 md:px-8">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-white mb-2">My Favorites</h1>
-            <p className="text-gray-400">
-              {favorites.length > 0
-                ? `You have ${favorites.length} favorite${favorites.length !== 1 ? 's' : ''}`
-                : 'No favorites yet'}
-            </p>
+          <div className="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+            <div>
+              <h1 className="text-4xl font-bold text-white mb-2">My Favorites</h1>
+              <p className="text-gray-400">
+                {favorites.length > 0
+                  ? `You have ${favorites.length} favorite${favorites.length !== 1 ? 's' : ''}`
+                  : 'No favorites yet'}
+              </p>
+            </div>
+            {user && favorites.length > 0 && (
+              <ShareButton favorites={favorites} userId={user.id} />
+            )}
           </div>
 
           {favorites.length === 0 ? (
