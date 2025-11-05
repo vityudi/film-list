@@ -8,14 +8,14 @@ interface MovieRowProps {
   title: string;
   movies: TMDBMovie[];
   onFavoriteClick?: (movie: TMDBMovie) => void;
-  favoriteIds?: number[];
+  isFavorite?: (movieId: number) => boolean;
 }
 
 export default function MovieRow({
   title,
   movies,
   onFavoriteClick,
-  favoriteIds = [],
+  isFavorite = () => false,
 }: MovieRowProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -96,7 +96,7 @@ export default function MovieRow({
               <MovieCard
                 movie={movie}
                 onFavoriteClick={onFavoriteClick}
-                isFavorite={favoriteIds.includes(movie.id)}
+                isFavorite={isFavorite(movie.id)}
               />
             </div>
           ))}

@@ -12,7 +12,7 @@ import {
   useSearchMovies,
 } from '@/lib/hooks/useMovies';
 import { useAuth } from '@/lib/hooks/useAuth';
-import { useFavoritesStore } from '@/lib/utils/store';
+import { useFavorites } from '@/lib/hooks/useFavorites';
 import type { TMDBMovie } from '@/lib/services/tmdbClient';
 
 export default function BrowsePage() {
@@ -44,8 +44,7 @@ export default function BrowsePage() {
 
   const { movies: searchResults, loading: searchLoading, searchMovies } = useSearchMovies();
 
-  const { favorites, addFavorite, removeFavorite } = useFavoritesStore();
-  const favoriteIds = favorites.map((m) => m.id);
+  const { favorites, addFavorite, removeFavorite, isFavorite } = useFavorites();
 
   // If no user, show nothing (will redirect via useEffect)
   if (!user) {
@@ -64,8 +63,8 @@ export default function BrowsePage() {
   };
 
   const handleFavoriteClick = (movie: TMDBMovie) => {
-    const isFavorite = favoriteIds.includes(movie.id);
-    if (isFavorite) {
+    const isFav = isFavorite(movie.id);
+    if (isFav) {
       removeFavorite(movie.id);
     } else {
       addFavorite({
@@ -114,7 +113,7 @@ export default function BrowsePage() {
                     <MovieCard
                       movie={movie}
                       onFavoriteClick={handleFavoriteClick}
-                      isFavorite={favoriteIds.includes(movie.id)}
+                      isFavorite={isFavorite(movie.id)}
                     />
                   </div>
                 ))}
@@ -143,7 +142,7 @@ export default function BrowsePage() {
                 title="Popular Now"
                 movies={popularMovies}
                 onFavoriteClick={handleFavoriteClick}
-                favoriteIds={favoriteIds}
+                isFavorite={isFavorite}
               />
             )}
 
@@ -155,7 +154,7 @@ export default function BrowsePage() {
                 title="Top Rated"
                 movies={topRatedMovies}
                 onFavoriteClick={handleFavoriteClick}
-                favoriteIds={favoriteIds}
+                isFavorite={isFavorite}
               />
             )}
 
@@ -167,7 +166,7 @@ export default function BrowsePage() {
                 title="Coming Soon"
                 movies={upcomingMovies}
                 onFavoriteClick={handleFavoriteClick}
-                favoriteIds={favoriteIds}
+                isFavorite={isFavorite}
               />
             )}
           </>

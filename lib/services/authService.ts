@@ -33,6 +33,11 @@ export async function signUp(credentials: SignUpCredentials): Promise<AuthRespon
       };
     }
 
+    // Ensure user record is created in public.users table
+    if (data.user?.id) {
+      await createUserRecord(data.user.id, data.user.email || '');
+    }
+
     return {
       success: true,
       user: {
@@ -129,4 +134,32 @@ export function onAuthStateChange(
   });
 
   return data.subscription;
+}
+
+async function createUserRecord(userId: string, email: string): Promise<void> {
+  try {
+    // Check if user record already exists
+    const { data } = await supabase
+      .from('users')
+      .select('id')
+      .eq('id', userId)
+      .single();
+
+    if (!data) {
+      // User record doesn't exist, create it
+      const { error } = await supabase.from('users').insert([
+        {
+          id: userId,
+          email: email,
+        },
+      ]);
+
+      if (error) {
+        console.error('Error creating user record:', error);
+      }
+    }
+  } catch (err) {
+    console.error('Error in createUserRecord:', err);
+    // Don't throw, just log the error
+  }
 }
