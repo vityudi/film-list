@@ -1,36 +1,282 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎬 FilmList - App de Filmes Favoritos
 
-## Getting Started
+Uma aplicação web moderna para descobrir, navegar e salvar seus filmes favoritos. Construída com Next.js, React e integrada com TMDB API e Supabase.
 
-First, run the development server:
+## 🎯 Decisões de Design
+
+### 1. Arquitetura em Camadas
+
+```
+UI Components → Custom Hooks → Services → APIs/Database
+```
+
+- **Componentes**: Apresentação apenas
+- **Hooks**: Lógica de estado e efeitos
+- **Services**: Chamadas de API e operações de banco de dados
+- **APIs**: Integrações externas
+
+### 2. Gerenciamento de Estado
+
+**Zustand** para gerenciar:
+- Estado de autenticação
+- Lista de favoritos
+- Notificações
+
+**Por quê?**
+- Simples e leve (sem boilerplate)
+- Sem provider hell
+- Performance otimizada
+
+### 3. Autenticação
+
+**Supabase Auth** com:
+- Sessions automáticas (JWT)
+- Row Level Security no banco de dados
+- Verificação de autenticação por rota
+
+### 4. Persistência de Dados
+
+Favoritos são salvos com:
+- **Otimismo**: Atualiza UI imediatamente
+- **Rollback**: Desfaz mudanças se falhar
+- **Notificações**: Informa sucesso/erro ao usuário
+
+### 5. Interface
+
+Design inspirado em Netflix:
+- Tema escuro para reduzir fadiga ocular
+- Carrosséis horizontais para descoberta
+- Cards com hover effects
+- Grid responsivo
+
+## 📊 Fluxo de Desenvolvimento
+
+### 1️⃣ Setup Inicial
+- Dependências: axios, Supabase, Zustand
+- Configuração de ambiente
+- TypeScript types
+
+### 2️⃣ Integração de APIs
+- TMDB Client com métodos de busca
+- Supabase Client
+
+### 3️⃣ Gerenciamento de Estado
+- Zustand stores para auth e favoritos
+
+### 4️⃣ Autenticação
+- Auth service (sign up, login, logout)
+- useAuth hook
+
+### 5️⃣ Componentes UI
+- Header, MovieCard, MovieRow
+- Auth Forms
+
+### 6️⃣ Funcionalidades
+- Browse page
+- Search
+- Favorites page
+- Add/Remove favoritos
+
+### 7️⃣ Banco de Dados
+- Schema SQL
+- Row Level Security
+- Triggers
+
+### 8️⃣ Notificações
+- Toast system
+
+## 🎬 Funcionalidades Implementadas
+
+### Landing Page (`/`)
+- Apresentação com features
+- Login/Signup inline
+- Auto-redirect se autenticado
+
+### Browse Page (`/browse`)
+- 3 seções: Popular, Top Rated, Upcoming
+- Busca em tempo real
+- Carrosséis com scroll
+- Adicionar/remover favoritos
+
+### Favorites Page (`/favorites`)
+- Exibição de todos os favoritos
+- Grid responsivo
+- Remover favoritos
+
+### Header
+- Logo do app
+- Busca integrada
+- Menu de usuário
+
+### Autenticação
+- Signup com validação
+- Login simples
+- Session persistente
+
+### Notificações
+- Toast success/error/info
+- Auto-dismiss em 3s
+
+
+## 📦 Pré-requisitos
+
+Antes de começar, certifique-se de ter instalado:
+
+- **Node.js** 18.x ou superior
+- **npm** ou **yarn**
+- Uma conta no [TMDB](https://www.themoviedb.org/)
+- Uma conta no [Supabase](https://supabase.com/)
+
+## 🚀 Instalação
+
+### 1. Clone o repositório
+
+```bash
+git clone https://github.com/seu-usuario/film-list.git
+cd film-list
+```
+
+### 2. Instale as dependências
+
+```bash
+npm install
+```
+
+### 3. Configure as variáveis de ambiente
+
+Copie o arquivo `.env.example` para `.env.local`:
+
+```bash
+cp .env.example .env.local
+```
+
+Edite `.env.local` e adicione suas credenciais.
+
+## ⚙️ Configuração
+
+### Configurar TMDB API
+
+1. Acesse [https://www.themoviedb.org/settings/api](https://www.themoviedb.org/settings/api)
+2. Crie uma conta ou faça login
+3. Vá para a seção de API
+4. Copie sua **API Key** (v3 auth)
+5. Cole em `.env.local`:
+
+```env
+NEXT_PUBLIC_TMDB_API_KEY=sua_chave_api_aqui
+```
+
+### Configurar Supabase
+
+#### 1. Criar Projeto Supabase
+
+1. Acesse [https://app.supabase.com](https://app.supabase.com)
+2. Clique em "New Project"
+3. Preencha os detalhes:
+   - **Name**: film-list
+   - **Database Password**: Guarde com segurança
+   - **Region**: Escolha a mais próxima
+
+#### 2. Obter Credenciais
+
+1. Vá para **Project Settings > API**
+2. Copie:
+   - **Project URL** → `NEXT_PUBLIC_SUPABASE_URL`
+   - **Anon Key** → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - **Service Role Secret** → `SUPABASE_SERVICE_ROLE_KEY`
+
+#### 3. Criar Banco de Dados
+
+1. Vá para **SQL Editor**
+2. Clique em "New Query"
+3. Cole o conteúdo de `supabase/migrations/001_initial_schema.sql`
+4. Clique em "Run"
+
+Isso criará:
+- Tabela `users` - Armazena dados dos usuários
+- Tabela `favorites` - Armazena filmes favoritos
+- Políticas de Row Level Security
+- Gatilhos para criar registros de usuário automaticamente
+
+#### 4. Habilitar Autenticação
+
+1. Vá para **Authentication > Providers**
+2. Certifique-se de que "Email" está habilitado
+
+## 💻 Como Usar
+
+### Modo Desenvolvimento
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+A aplicação estará disponível em [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Construir para Produção
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+### Lint
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run lint
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📁 Estrutura do Projeto
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+film-list/
+├── app/                          # Next.js App Directory
+│   ├── page.tsx                 # Landing page com login/signup
+│   ├── layout.tsx               # Root layout com Toast
+│   ├── globals.css              # Estilos globais
+│   ├── browse/                  # Página de navegação
+│   │   └── page.tsx            # Browse e search de filmes
+│   ├── favorites/               # Página de favoritos
+│   │   └── page.tsx            # Lista de filmes favoritos
+│   └── favicon.ico             # Ícone
+│
+├── components/                   # Componentes React reutilizáveis
+│   ├── Header.tsx              # Barra de navegação com menu
+│   ├── MovieCard.tsx           # Card individual de filme
+│   ├── MovieRow.tsx            # Carrossel de filmes
+│   ├── Toast.tsx               # Notificações toast
+│   └── auth/
+│       ├── LoginForm.tsx       # Formulário de login
+│       └── SignUpForm.tsx      # Formulário de registro
+│
+├── lib/
+│   ├── services/               # Clientes e serviços de API
+│   │   ├── tmdbClient.ts      # Cliente da API TMDB
+│   │   ├── supabaseClient.ts  # Cliente Supabase
+│   │   ├── authService.ts     # Funções de autenticação
+│   │   └── favoritesService.ts # Operações de favoritos
+│   │
+│   ├── hooks/                  # Custom React hooks
+│   │   ├── useAuth.ts         # Gerenciamento de autenticação
+│   │   ├── useFavorites.ts    # Gerenciamento de favoritos
+│   │   └── useMovies.ts       # Busca e fetch de filmes
+│   │
+│   ├── types/                  # Definições de tipos TypeScript
+│   │   └── index.ts           # Types de Movie, User, etc
+│   │
+│   └── utils/                  # Utilidades
+│       ├── store.ts           # Zustand stores (auth, favorites)
+│       └── notificationStore.ts # Store de notificações
+│
+├── supabase/
+│   └── migrations/
+│       └── 001_initial_schema.sql # Schema do banco de dados
+│
+├── public/                      # Arquivos estáticos
+├── .env.example                 # Template de variáveis de ambiente
+├── .env.local                   # Variáveis de ambiente (não versionar)
+├── next.config.ts              # Configuração Next.js
+├── tsconfig.json               # Configuração TypeScript
+├── package.json                # Dependências e scripts
+└── README.md                   # Este arquivo
+```
