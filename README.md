@@ -97,16 +97,44 @@ Design inspirado em Netflix:
 - Busca em tempo real
 - Carrosséis com scroll
 - Adicionar/remover favoritos
+- Clique em qualquer filme para ver detalhes completos
+
+### Movie Details Modal
+- Exibe informações completas do filme:
+- Pôster e backdrop de alta qualidade
+- Título e tagline
+- Avaliação e número de votos
+- Duração
+- Data de lançamento
+- Sinopse completa
+- Lista de gêneros
+- Orçamento e receita
+- Status de lançamento
+- Link para IMDb
+- Adicionar/remover de favoritos diretamente do modal
+- Suporte a navegação por teclado (ESC para fechar)
+- Scroll bloqueado quando modal está aberto
 
 ### Favorites Page (`/favorites`)
 - Exibição de todos os favoritos
 - Grid responsivo
 - Remover favoritos
+- Botão "Share Favorites" no header para gerar link público
+
+### Share Favorites
+- Gerar links públicos para compartilhar lista de favoritos
+- Link copiado automaticamente para clipboard
+- Qualquer pessoa pode acessar o link sem fazer login
+- Visualizar filmes compartilhados com clique para ver detalhes
+- URL pública: `/share/[token-único]`
 
 ### Header
 - Logo do app
 - Busca integrada
 - Menu de usuário
+- Botão "Share Favorites" com eye icon azul
+- Visível em todas as páginas autenticadas
+- Texto em tempo real e feedback visual
 
 ### Autenticação
 - Signup com validação
@@ -116,6 +144,7 @@ Design inspirado em Netflix:
 ### Notificações
 - Toast success/error/info
 - Auto-dismiss em 3s
+- Feedback ao compartilhar (sucesso/erro)
 
 
 ## 📦 Pré-requisitos
@@ -241,9 +270,11 @@ film-list/
 │   └── favicon.ico             # Ícone
 │
 ├── components/                   # Componentes React reutilizáveis
-│   ├── Header.tsx              # Barra de navegação com menu
+│   ├── Header.tsx              # Barra de navegação com menu e share button
 │   ├── MovieCard.tsx           # Card individual de filme
 │   ├── MovieRow.tsx            # Carrossel de filmes
+│   ├── MovieDetailsModal.tsx   # Modal com detalhes completos do filme
+│   ├── ShareButton.tsx         # Botão de compartilhamento de favoritos
 │   ├── Toast.tsx               # Notificações toast
 │   └── auth/
 │       ├── LoginForm.tsx       # Formulário de login
@@ -254,12 +285,13 @@ film-list/
 │   │   ├── tmdbClient.ts      # Cliente da API TMDB
 │   │   ├── supabaseClient.ts  # Cliente Supabase
 │   │   ├── authService.ts     # Funções de autenticação
-│   │   └── favoritesService.ts # Operações de favoritos
+│   │   ├── favoritesService.ts # Operações de favoritos
+│   │   └── shareService.ts    # Operações de compartilhamento
 │   │
 │   ├── hooks/                  # Custom React hooks
 │   │   ├── useAuth.ts         # Gerenciamento de autenticação
 │   │   ├── useFavorites.ts    # Gerenciamento de favoritos
-│   │   └── useMovies.ts       # Busca e fetch de filmes
+│   │   └── useMovies.ts       # Busca, fetch e detalhes de filmes
 │   │
 │   ├── types/                  # Definições de tipos TypeScript
 │   │   └── index.ts           # Types de Movie, User, etc
