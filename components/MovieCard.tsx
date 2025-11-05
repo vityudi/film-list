@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useMovieDetailsModalStore } from '@/lib/utils/store';
 import { tmdbClient } from '@/lib/services/tmdbClient';
 import type { TMDBMovie } from '@/lib/services/tmdbClient';
 
@@ -16,9 +17,21 @@ export default function MovieCard({
   isFavorite = false,
 }: MovieCardProps) {
   const posterUrl = tmdbClient.getImageUrl(movie.poster_path, 'w500');
+  const { openModal } = useMovieDetailsModalStore();
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't open modal if clicking the favorite button
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    openModal(movie.id);
+  };
 
   return (
-    <div className="relative group rounded-lg overflow-hidden bg-gray-900 cursor-pointer transition-transform duration-300 hover:scale-105">
+    <div
+      className="relative group rounded-lg overflow-hidden bg-gray-900 cursor-pointer transition-transform duration-300 hover:scale-105"
+      onClick={handleCardClick}
+    >
       {/* Poster Image */}
       <div className="relative w-full aspect-[2/3] overflow-hidden">
         <Image

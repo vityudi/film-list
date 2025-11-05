@@ -16,6 +16,13 @@ interface FavoritesState {
   isFavorite: (movieId: number) => boolean;
 }
 
+interface MovieDetailsModalState {
+  isOpen: boolean;
+  movieId: number | null;
+  openModal: (movieId: number) => void;
+  closeModal: () => void;
+}
+
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   loading: true,
@@ -38,4 +45,11 @@ export const useFavoritesStore = create<FavoritesState>((set, get) => ({
     })),
   setFavorites: (favorites) => set({ favorites }),
   isFavorite: (movieId) => get().favorites.some((m) => m.id === movieId),
+}));
+
+export const useMovieDetailsModalStore = create<MovieDetailsModalState>((set) => ({
+  isOpen: false,
+  movieId: null,
+  openModal: (movieId) => set({ isOpen: true, movieId }),
+  closeModal: () => set({ isOpen: false, movieId: null }),
 }));

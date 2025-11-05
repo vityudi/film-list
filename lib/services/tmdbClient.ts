@@ -12,6 +12,16 @@ interface TMDBMovie {
   genre_ids: number[];
 }
 
+interface TMDBMovieDetails extends TMDBMovie {
+  runtime: number | null;
+  budget: number;
+  revenue: number;
+  genres: { id: number; name: string }[];
+  tagline: string | null;
+  status: string;
+  imdb_id: string | null;
+}
+
 interface TMDBResponse<T> {
   page: number;
   results: T[];
@@ -91,9 +101,9 @@ class TMDBClient {
     }
   }
 
-  async getMovieDetails(movieId: number) {
+  async getMovieDetails(movieId: number): Promise<TMDBMovieDetails> {
     try {
-      const response = await this.client.get(`/movie/${movieId}`);
+      const response = await this.client.get<TMDBMovieDetails>(`/movie/${movieId}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching movie details:', error);
@@ -110,4 +120,4 @@ class TMDBClient {
 }
 
 export const tmdbClient = new TMDBClient();
-export type { TMDBMovie, TMDBResponse };
+export type { TMDBMovie, TMDBMovieDetails, TMDBResponse };

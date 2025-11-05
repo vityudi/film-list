@@ -10,6 +10,16 @@ export interface Movie {
   genreIds: number[];
 }
 
+export interface MovieDetails extends Movie {
+  runtime: number | null;
+  budget: number;
+  revenue: number;
+  genres: { id: number; name: string }[];
+  tagline: string | null;
+  status: string;
+  imdbId: string | null;
+}
+
 export interface UserFavorite {
   id: string;
   userId: string;

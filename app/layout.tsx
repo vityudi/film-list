@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Toast from "@/components/Toast";
+import MovieDetailsModal from "@/components/MovieDetailsModal";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -30,6 +31,7 @@ export default function RootLayout({
       >
         {children}
         <Toast />
+        <MovieDetailsModal />
       </body>
     </html>
   );

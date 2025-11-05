@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { tmdbClient, type TMDBMovie, type TMDBResponse } from '@/lib/services/tmdbClient';
+import { tmdbClient, type TMDBMovie, type TMDBMovieDetails, type TMDBResponse } from '@/lib/services/tmdbClient';
 
 interface UseMoviesReturn {
   movies: TMDBMovie[];
@@ -124,4 +124,33 @@ export function useSearchMovies() {
   }, []);
 
   return { movies, loading, error, searchMovies, totalPages, currentPage };
+}
+
+interface UseMovieDetailsReturn {
+  movieDetails: TMDBMovieDetails | null;
+  loading: boolean;
+  error: string | null;
+  fetchMovieDetails: (movieId: number) => Promise<void>;
+}
+
+export function useMovieDetails(): UseMovieDetailsReturn {
+  const [movieDetails, setMovieDetails] = useState<TMDBMovieDetails | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchMovieDetails = useCallback(async (movieId: number) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const details = await tmdbClient.getMovieDetails(movieId);
+      setMovieDetails(details);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch movie details');
+      setMovieDetails(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return { movieDetails, loading, error, fetchMovieDetails };
 }
