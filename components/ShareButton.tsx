@@ -3,20 +3,29 @@
 import { useState } from 'react';
 import { createShareLink } from '@/lib/services/shareService';
 import { useNotificationStore } from '@/lib/utils/notificationStore';
+import { useFavorites } from '@/lib/hooks/useFavorites';
+import { useAuth } from '@/lib/hooks/useAuth';
 import type { Movie } from '@/lib/types';
 
 interface ShareButtonProps {
-  favorites: Movie[];
-  userId: string;
+  favorites?: Movie[];
+  userId?: string;
+  compact?: boolean;
 }
 
-export default function ShareButton({ favorites, userId }: ShareButtonProps) {
+export default function ShareButton({ favorites: propFavorites, userId: propUserId, compact = false }: ShareButtonProps) {
   const [loading, setLoading] = useState(false);
   const [showCopyFeedback, setShowCopyFeedback] = useState(false);
   const { addNotification } = useNotificationStore();
+  const { favorites: hookFavorites } = useFavorites();
+  const { user } = useAuth();
+
+  // Use props if provided, otherwise use hooks
+  const favorites = propFavorites || hookFavorites;
+  const userId = propUserId || user?.id;
 
   const handleShare = async () => {
-    if (favorites.length === 0) {
+    if (!userId || favorites.length === 0) {
       addNotification('Add some favorites before sharing', 'error');
       return;
     }
@@ -49,6 +58,67 @@ export default function ShareButton({ favorites, userId }: ShareButtonProps) {
     }
   };
 
+  if (compact) {
+    // Compact version for header with text
+    return (
+      <button
+        onClick={handleShare}
+        disabled={loading || favorites.length === 0}
+        className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all text-sm ${
+          loading || favorites.length === 0
+            ? 'bg-blue-900 text-blue-300 cursor-not-allowed opacity-60'
+            : showCopyFeedback
+              ? 'bg-green-600 hover:bg-green-700 text-white'
+              : 'bg-blue-600 hover:bg-blue-700 text-white'
+        }`}
+        title="Share your favorites"
+        aria-label="Share favorites"
+      >
+        {loading ? (
+          <>
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current" />
+            <span>Creating...</span>
+          </>
+        ) : showCopyFeedback ? (
+          <>
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span>Copied!</span>
+          </>
+        ) : (
+          <>
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+              />
+            </svg>
+            <span>Share Favorites</span>
+          </>
+        )}
+      </button>
+    );
+  }
+
+  // Full button version for favorites page
   return (
     <button
       onClick={handleShare}
