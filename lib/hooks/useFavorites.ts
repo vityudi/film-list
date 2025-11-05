@@ -12,15 +12,6 @@ export function useFavorites() {
   const { user } = useAuth();
   const { favorites, addFavorite, removeFavorite, setFavorites } = useFavoritesStore();
 
-  // Load favorites from database on mount or when user changes
-  useEffect(() => {
-    if (user) {
-      loadFavorites();
-    } else {
-      setFavorites([]);
-    }
-  }, [user?.id]);
-
   const loadFavorites = useCallback(async () => {
     if (!user) return;
 
@@ -28,9 +19,24 @@ export function useFavorites() {
     setFavorites(dbFavorites);
   }, [user, setFavorites]);
 
+  // Load favorites from database on mount or when user changes
+  useEffect(() => {
+    if (user) {
+      loadFavorites();
+    } else {
+      setFavorites([]);
+    }
+  }, [user?.id, loadFavorites, setFavorites]);
+
   const handleAddFavorite = useCallback(
     async (movie: Movie) => {
       if (!user) return;
+
+      // Check if already favorited
+      const alreadyFavorited = favorites.some((m) => m.id === movie.id);
+      if (alreadyFavorited) {
+        return; // Already favorited, do nothing
+      }
 
       // Optimistically add to local state
       addFavorite(movie);
@@ -44,7 +50,7 @@ export function useFavorites() {
         console.error('Failed to add favorite:', response.error);
       }
     },
-    [user, addFavorite, removeFavorite]
+    [user, addFavorite, removeFavorite, favorites]
   );
 
   const handleRemoveFavorite = useCallback(

@@ -12,6 +12,19 @@ export async function addFavoriteToDatabase(
   movieData: Movie
 ): Promise<FavoriteResponse> {
   try {
+    // Check if favorite already exists
+    const { data: existing } = await supabase
+      .from('favorites')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('movie_id', movieId)
+      .single();
+
+    // If already exists, just return success
+    if (existing) {
+      return { success: true };
+    }
+
     const { error } = await supabase.from('favorites').insert([
       {
         user_id: userId,
