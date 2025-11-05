@@ -7,7 +7,7 @@ export default function Toast() {
   const { notifications, removeNotification } = useNotificationStore();
 
   return (
-    <div className="fixed top-24 left-1/2 -translate-x-1/2 z-50 space-y-3 pointer-events-none">
+    <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[9999] space-y-3 pointer-events-none">
       {notifications.map((notification) => (
         <div
           key={notification.id}
