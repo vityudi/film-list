@@ -83,7 +83,7 @@ export default function BrowsePage() {
 
   return (
     <div className="bg-black min-h-screen">
-      <Header user={null} onSearch={handleSearch} />
+      <Header onSearch={handleSearch} />
 
       <main className="pt-16 pb-8">
         {isSearching ? (
