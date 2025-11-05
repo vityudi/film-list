@@ -1,15 +1,17 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { useAuth } from '@/lib/hooks/useAuth';
 
 interface HeaderProps {
-  user?: { email: string } | null;
-  onLogout?: () => void;
   onSearch?: (query: string) => void;
 }
 
-export default function Header({ user, onLogout, onSearch }: HeaderProps) {
+export default function Header({ onSearch }: HeaderProps) {
+  const router = useRouter();
+  const { user, signOut } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -87,9 +89,10 @@ export default function Header({ user, onLogout, onSearch }: HeaderProps) {
                       My Favorites
                     </Link>
                     <button
-                      onClick={() => {
-                        onLogout?.();
+                      onClick={async () => {
+                        await signOut();
                         setIsMenuOpen(false);
+                        router.push('/');
                       }}
                       className="w-full text-left px-4 py-2 text-white hover:bg-gray-800 rounded-b-lg transition-colors"
                     >

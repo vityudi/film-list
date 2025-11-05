@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import MovieRow from '@/components/MovieRow';
 import MovieCard from '@/components/MovieCard';
@@ -10,10 +11,21 @@ import {
   useUpcomingMovies,
   useSearchMovies,
 } from '@/lib/hooks/useMovies';
+import { useAuth } from '@/lib/hooks/useAuth';
 import { useFavoritesStore } from '@/lib/utils/store';
 import type { TMDBMovie } from '@/lib/services/tmdbClient';
 
 export default function BrowsePage() {
+  const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
+
+  // Redirect to home if not authenticated
+  useEffect(() => {
+    if (!user) {
+      router.push('/');
+    }
+  }, [user, router]);
+
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
 
@@ -34,6 +46,11 @@ export default function BrowsePage() {
 
   const { favorites, addFavorite, removeFavorite } = useFavoritesStore();
   const favoriteIds = favorites.map((m) => m.id);
+
+  // If no user, show nothing (will redirect via useEffect)
+  if (!user) {
+    return null;
+  }
 
   const handleSearch = (query: string) => {
     if (query.trim()) {
